@@ -15,8 +15,10 @@ export async function PATCH(
         const params = req.nextUrl.searchParams;
         const date: string | null = params.get('date');
         const time: string | null = params.get('time');
+        const udate: string | null = params.get('udate');
+        const utime: string | null = params.get('utime');
         const updatedAppointment = await AppointmenModel.findOneAndUpdate(
-            { doctorId: params.get('doctorId') },
+            { _id: params.get('appointmentId') },
             {
                 date: date,
                 time: time,
@@ -24,7 +26,13 @@ export async function PATCH(
             },
         );
         if (!updatedAppointment) { return NextResponse.json("Appointment rescheduled failed", { status: 404 }); }
-        
+        await ScheduleModel.findOneAndUpdate({
+            doctorId: updatedAppointment.doctorId,
+            "schedule.date": udate
+        }, {
+            $push: { "schedule.$.availableSlots": utime },
+            $pull: { "schedule.$.bookedSlots": utime }
+        });
         const s = await ScheduleModel.findOne({
             doctorId: updatedAppointment.doctorId
         });

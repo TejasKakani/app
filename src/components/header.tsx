@@ -2,7 +2,8 @@
 import axios from "axios";
 import Register from "./register";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { Redirect } from "next";
 
 export default function Header() {
 
@@ -38,7 +39,12 @@ export default function Header() {
 
     return (
         <header className=" p-4 bg-gray-300 text-gray-800 fixed w-full h-20 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Pharmacists</h1>
+          <div>
+            <h1 className="text-xl font-bold hidden sm:block">Pharmacists</h1>
+            <img  onClick={() => {
+              redirect("/");
+            }} src="/logo.png" alt="pharmacy" className="h-10 w-10 sm:hidden" />
+            </div>
           <nav>
             {user.id && <ul className="flex space-x-4">
               <li>

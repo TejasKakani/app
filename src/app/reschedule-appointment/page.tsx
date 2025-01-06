@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 export default function Page() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const appointmentId = searchParams.get("id");
     const doctor = searchParams.get("doctorId");
+    const udate = searchParams.get("date");
+    const utime = searchParams.get("time");
     let formatter = useDateFormatter({ dateStyle: "full" });
     const [date, setDate] = React.useState(parseDate("2024-04-04"));
     const [slots, setSlots] = React.useState([]);
@@ -62,7 +65,7 @@ export default function Page() {
                                 return;
                             }
                             const d =  formatter.format(date.toDate(getLocalTimeZone()))
-                            axios.patch(`/api/patient/reschedule-appointment?doctorId=${doctor}&time=${slot}&date=${d}`, {
+                            axios.patch(`/api/patient/reschedule-appointment?appointmentId=${appointmentId}&time=${slot}&date=${d}&utime=${utime}&udate=${udate}`, {
                             }).then((response) => {
                                 console.log(response.data);
                             }).catch((error) => {
