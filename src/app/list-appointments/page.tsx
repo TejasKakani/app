@@ -2,25 +2,31 @@
 import axios from "axios";
 import React from "react";
 import { redirect } from "next/navigation";
-import { a } from "framer-motion/client";
+
+function GetDoctorAndPatientName({appointmentId} : {appointmentId: string}) {
+    
+    const [doctorName, setDoctorName] = React.useState('');
+    const [patientName, setPatientName] = React.useState('');
+
+    axios.get(`http://localhost:3000/api/common/get-doctor-and-patient-name?appointmentId=${appointmentId}`).then((response) => {
+        setDoctorName(response.data.doctorName);
+        setPatientName(response.data.patientName);
+    }).catch((error) => {
+        console.log(error);
+    });
+    return <div>
+        <h1>Doctor: {doctorName}</h1>
+        <h1>Patient: {patientName}</h1>
+    </div>
+}
 
 export default function () {
 
     const [appointments, setAppointments] = React.useState([]);
     const [role, setRole] = React.useState('');
 
-    const [doctorName, setDoctorName] = React.useState('');
-    const [patientName, setPatientName] = React.useState('');
-
-    axios.get("/api/common/get-doctor-and-patient-name").then((response) => {
-        setDoctorName(response.data.doctorName);
-        setPatientName(response.data.patientName);
-    }).catch((error) => {
-        console.log(error);
-    });
-
     React.useEffect(() => {
-        axios.get("http://localhost:3000/api/common/get-doctor-and-patient-name")
+        axios.get("http://localhost:3000/api/common/get-appointments")
             .then((response) => {
                 setAppointments(response.data.appointments);
                 setRole(response.data.role);
@@ -37,8 +43,7 @@ export default function () {
                     {
                         appointments.map((appointment: any) => (
                             <li key={appointment._id} className="p-4 m-4 bg-gray-100 rounded-lg text-center">
-                                <h1>Doctor: {doctorName}</h1>
-                                <h1>Patient: {patientName}</h1>
+                                <GetDoctorAndPatientName appointmentId={appointment._id} />
                                 <h2>Date: {appointment.date}</h2>
                                 <p>Time: {appointment.time}</p>
                                 <p>Status: {appointment.status}</p>
